@@ -64,7 +64,7 @@ const loginUser = async (req, res) => {
         }).select('+password')
 
         if (!user) {
-            return res.status(404).json({ message: "user not found!" })
+            return res.status(401).json({ message: "user not found!" })
         }
         const isPassword = await bcrypt.compare(password, user.password)
 
@@ -94,4 +94,12 @@ const loginUser = async (req, res) => {
         console.error("Login is not possible", err)
     }
 }
-module.exports = { registerUser, loginUser }
+
+const getCurrentUser = async (req,res,next)=>{
+    return res.status(200).json({
+        message:"user fetched succesfully",
+        user:req.user
+    })
+    next()
+}
+module.exports = { registerUser, loginUser ,getCurrentUser}
