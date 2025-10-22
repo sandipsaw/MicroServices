@@ -93,30 +93,34 @@ const loginUser = async (req, res) => {
         })
     }
     catch (err) {
-        console.error("Login is not possible", err)
+        console.error("Login is not possible", err);
+        return res.status(500).json({ message: 'Internal server error' });
     }
 }
 
-const getCurrentUser = async (req,res,next)=>{
+const getCurrentUser = async (req, res) => {
     return res.status(200).json({
-        message:"user fetched succesfully",
-        user:req.user
+        message: "user fetched succesfully",
+        user: req.user
     })
-    next()
 }
 
-const logOutUser = async(req,res)=>{
+const logOutUser = async (req, res) => {
     const token = req.cookies.token;
-    if(token){
-        await redis.set(`blacklist:${token}`,'true','EX',24*60*60)
+    if (token) {
+        await redis.set(`blacklist:${token}`, 'true', 'EX', 24 * 60 * 60)
     }
-    res.clearCookie('token',{
-        httpOnly:true,
-        secure:true,
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: true,
     })
 
     return res.status(200).json({
-        message:"user logged out successfully"
+        message: "user logged out successfully"
     })
 }
-module.exports = { registerUser, loginUser ,getCurrentUser,logOutUser}
+
+const getUserAddress = (req, res) => {
+    const id = req.user.id
+}
+module.exports = { registerUser, loginUser, getCurrentUser, logOutUser, getUserAddress }

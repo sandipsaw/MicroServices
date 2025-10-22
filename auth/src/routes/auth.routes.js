@@ -8,4 +8,6 @@ router.post('/register',validator.registerUserValidation,authController.register
 router.post('/login',validator.loginUserValidation,authController.loginUser)
 router.get('/me',authMiddleware,authController.getCurrentUser)
 router.get('/logout',authController.logOutUser)
+router.get('/user/me/address',authMiddleware,authController.getUserAddress)
+
 module.exports = router;
