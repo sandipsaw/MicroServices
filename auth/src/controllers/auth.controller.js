@@ -27,7 +27,7 @@ const registerUser = async (req, res) => {
         username,
         email,
         password: hashPassword,
-        fullname: { firstname, lastname }
+        fullname: { firstname, lastname },
     })
 
     const token = jwt.sign({
@@ -120,7 +120,72 @@ const logOutUser = async (req, res) => {
     })
 }
 
-const getUserAddress = (req, res) => {
+const getUserAddress = async (req, res) => {
     const id = req.user.id
+    const user = await userModel.findById(id).select('addresses')
+    if (!user) {
+        return res.status(404).json({
+            message: "user not found"
+        })
+    }
+    return res.status(200).json({
+        message: "user fetched successfully",
+        addresses: user.addresses
+    })
 }
-module.exports = { registerUser, loginUser, getCurrentUser, logOutUser, getUserAddress }
+
+const addUserAddress = async (req, res) => {
+
+    const id = req.user.id;
+    const { street, city, state, country, pincode, isDefault } = req.body
+
+    const user = await userModel.findOneAndUpdate({ _id: id }, {
+        $push: {
+            addresses: { street, city, state, country, pincode, isDefault }
+        }
+    }, { new: true })
+    if (!user) {
+        return res.status(404).json({
+            message: "user not found"
+        })
+    }
+
+    console.log("hello ji");
+    console.log(user);
+    return res.status(201).json({
+        message: "Address added successfully",
+        address: user.addresses[user.addresses.length - 1]
+    })
+}
+
+const deleteUserAddress = async (req, res) => {
+    const id = req.user.id;
+    const { addressId } = req.params;
+
+    const isAddressExists = await userModel.findOne({ _id: id, 'addresses._id': addressId })
+    
+    if (!isAddressExists) {
+        return res.status(404).json({ message: "address not found" })
+    }
+
+    const user = await userModel.findOneAndUpdate({ _id: id }, {
+        $pull: {
+            addresses: { _id: addressId }
+        }
+    }, { new: true })
+
+    if (!user) {
+        return res.status(404).json({
+            message: "user not found"
+        })
+    }
+    const addressExists = user.addresses.some(addr => addr._id.toString() === addressId)
+    if (addressExists) {
+        return res.status(500).json({ message: "failed to delete address" })
+    }
+    return res.status(200).json({
+        message: "address deleted successfully",
+        addresses: user.addresses
+    })
+}
+module.exports = { registerUser, loginUser, getCurrentUser, logOutUser, getUserAddress, addUserAddress, deleteUserAddress }

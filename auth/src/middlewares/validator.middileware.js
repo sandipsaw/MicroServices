@@ -32,6 +32,9 @@ const registerUserValidation = [
         .withMessage("last name must be string")
         .notEmpty()
         .withMessage("last name is required"),
+    // body('role')
+    // .isIn(['user','seller'])
+    // .withMessage("Role must be either user or seller"),
     responseWithValidationError
 ]
 
@@ -55,8 +58,42 @@ const loginUserValidation = [
                 error: [{ message: "Either email or username is required" }]
             })
         }
-       
+
         responseWithValidationError(req, res, next)
     }
 ]
-module.exports = { registerUserValidation, loginUserValidation }
+
+const addUserAddressValidator = [
+    body('street')
+        .isString()
+        .withMessage("street must be string")
+        .notEmpty()
+        .withMessage("street is required"),
+    body('city')
+        .isString()
+        .withMessage("city must be string")
+        .notEmpty()
+        .withMessage("city is required"),
+    body('state')
+        .isString()
+        .withMessage("state must be string")
+        .notEmpty()
+        .withMessage("state is required"),
+    body('country')
+        .isString()
+        .withMessage("country must be string")
+        .notEmpty()
+        .withMessage("country is required"),
+    body('pincode')
+        .isString()
+        .withMessage("pincode must be string")
+        .notEmpty()
+        .withMessage("pincode is required")
+        .matches(/^\d{5,10}$/).withMessage("pincode must be a valid numeric code"),
+    body('isDefault')
+        .optional()
+        .isBoolean()
+        .withMessage("isDefault must be boolean"),
+    responseWithValidationError
+]
+module.exports = { registerUserValidation, loginUserValidation , addUserAddressValidator }

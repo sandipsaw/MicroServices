@@ -28,9 +28,9 @@ describe('User addresses API', () => {
         return { user, cookies };
     }
 
-    describe('GET /api/auth/users/me/addresses', () => {
+    describe('GET /api/auth/user/me/addresses', () => {
         it('requires authentication (401 without cookie)', async () => {
-            const res = await request(app).get('/api/auth/users/me/addresses');
+            const res = await request(app).get('/api/auth/user/me/addresses');
             expect(res.status).toBe(401);
         });
 
@@ -45,7 +45,7 @@ describe('User addresses API', () => {
             await user.save();
 
             const res = await request(app)
-                .get('/api/auth/users/me/addresses')
+                .get('/api/auth/user/me/addresses')
                 .set('Cookie', cookies);
 
             expect(res.status).toBe(200);
@@ -59,12 +59,12 @@ describe('User addresses API', () => {
         });
     });
 
-    describe('POST /api/auth/users/me/addresses', () => {
+    describe('POST /api/auth/user/me/addresses', () => {
         it('validates pincode and phone and returns 400 on invalid input', async () => {
             const { cookies } = await seedUserAndLogin({ username: 'adder1', email: 'adder1@example.com' });
 
             const res = await request(app)
-                .post('/api/auth/users/me/addresses')
+                .post('/api/auth/user/me/addresses')
                 .set('Cookie', cookies)
                 .send({
                     street: '12 Invalid Ave',
@@ -82,7 +82,7 @@ describe('User addresses API', () => {
             const { cookies } = await seedUserAndLogin({ username: 'adder2', email: 'adder2@example.com' });
 
             const res = await request(app)
-                .post('/api/auth/users/me/addresses')
+                .post('/api/auth/user/me/addresses')
                 .set('Cookie', cookies)
                 .send({
                     street: '1600 Amphitheatre Pkwy',
@@ -102,7 +102,7 @@ describe('User addresses API', () => {
         });
     });
 
-    describe('DELETE /api/auth/users/me/addresses/:addressId', () => {
+    describe('DELETE /api/auth/user/me/addresses/:addressId', () => {
         it('removes an address; returns 200 and updates list', async () => {
             const { user, cookies } = await seedUserAndLogin({ username: 'deleter', email: 'deleter@example.com' });
 
@@ -115,7 +115,7 @@ describe('User addresses API', () => {
             const idToDelete = user.addresses[ 0 ]._id.toString();
 
             const res = await request(app)
-                .delete(`/api/auth/users/me/addresses/${idToDelete}`)
+                .delete(`/api/auth/user/me/addresses/${idToDelete}`)
                 .set('Cookie', cookies);
 
             expect(res.status).toBe(200);

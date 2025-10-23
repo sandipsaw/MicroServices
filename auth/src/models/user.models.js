@@ -4,8 +4,10 @@ const addressSchema = new mongoose.Schema({
     street:String,
     city:String,
     state:String,
-    zip:Number
-})
+    pincode:String,
+    country:String,
+    isDefault: {type:Boolean,default:false}
+},{new:true})
 
 const userSchema = new mongoose.Schema({
     username:{
@@ -34,10 +36,10 @@ const userSchema = new mongoose.Schema({
     },
     role:{
         type:String,
-        enum:['user','model'],
+        enum:['user','seller'],
         default:'user'
     },
-    address:[
+    addresses:[
         addressSchema,
     ]
 })
